@@ -29,8 +29,8 @@ class ActivitiesScreen extends StatelessWidget {
               return ListTile(
                 leading: const Icon(Icons.history),
                 title: Text(order['venue_name'] ?? 'Venue'),
-                subtitle: Text('Date: ' + (order['date'] ?? '')),
-                trailing: Text('₹${order['amount'] ?? ''}'),
+                subtitle: Text(order['time'] ?? ''),           // ← 'time' not 'date'
+                trailing: Text('₹${order['amount'] ?? ''}'),   // ← 'amount' comes from v.price now
               );
             },
           );

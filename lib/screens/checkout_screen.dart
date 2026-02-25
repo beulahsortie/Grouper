@@ -42,10 +42,10 @@ class CheckoutScreen extends StatelessWidget {
                   onPressed: () async {
                     try {
                       await ApiService.createBooking(
-                        userId: 1, // Demo user
+                        userId: 1,
                         venueId: venue.id,
-                        amount: venue.price,
-                        date: DateTime.now().toIso8601String(),
+                        time: '02:00 pm | 3 hrs',   // or collect from user input
+                        description: 'Booking for ${venue.name}',
                       );
                       showDialog<void>(
                         context: context,
