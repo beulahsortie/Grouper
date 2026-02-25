@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _dataFuture = Future.wait([ApiService.getCategories(), ApiService.getVenues()]);
+    print("API Response: $_dataFuture");
   }
 
   @override
