@@ -787,7 +787,7 @@ class _VenueCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('\$${venue.price.toStringAsFixed(0)}/night',
+                      Text('\$${venue.price.toStringAsFixed(0)}/hour',
                           style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

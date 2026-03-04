@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/category.dart';
 import '../models/venue.dart';
+import 'package:project_b1/env/env.dart';
 
 class ApiService {
   // Use environment override or default to emulator-friendly host
-  static const String _defaultBase = 'http://localhost:3000/api';
-  static const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBase);
+  static const String _defaultBase = 'http://localhost/api';
+  //static const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBase);
+  static final String baseUrl = Env.apiBaseUrl.isNotEmpty ? Env.apiBaseUrl : _defaultBase;
 
   static Future<List<Category>> getCategories() async {
     final uri = Uri.parse('$baseUrl/categories');
