@@ -6,6 +6,8 @@ class Venue {
   final double? latitude;
   final double? longitude;
   final String? address;
+  final double? distanceKm;
+  final int? categoryId;
 
   Venue({
     required this.id,
@@ -15,6 +17,8 @@ class Venue {
     this.latitude,
     this.longitude,
     this.address,
+    this.distanceKm,
+    this.categoryId,
   });
 
   factory Venue.fromJson(Map<String, dynamic> json) => Venue(
@@ -35,5 +39,15 @@ class Venue {
                 : double.tryParse('${json['longitude']}'))
             : null,
         address: json['address'],
+        distanceKm: json['distance_km'] != null
+            ? (json['distance_km'] is num
+                ? (json['distance_km'] as num).toDouble()
+                : double.tryParse('${json['distance_km']}'))
+            : null,
+        categoryId: json['category_id'] != null
+            ? (json['category_id'] is int
+                ? json['category_id']
+                : int.tryParse('${json['category_id']}'))
+            : null,
       );
 }
