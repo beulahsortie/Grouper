@@ -9,7 +9,7 @@ class ApiService {
   static const String _defaultBase = 'http://localhost/api';
   //static const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBase);
   static final String baseUrl = Env.apiBaseUrl.isNotEmpty ? Env.apiBaseUrl : _defaultBase;
-
+  
   static Future<List<Category>> getCategories() async {
     final uri = Uri.parse('$baseUrl/categories');
     final res = await http.get(uri);
@@ -73,21 +73,32 @@ class ApiService {
         throw Exception('Failed to load user profile: ${res.statusCode}');
       }
 
-  static Future<void> updateUserProfile(int userId, String email, String phone, String location, {String? avatarUrl}) async {
-        final uri = Uri.parse('$baseUrl/users/$userId');
-        final body = <String, dynamic>{
-          'email': email,
-          'phone': phone,
-          'location': location,
-        };
-        if (avatarUrl != null) body['avatar_url'] = avatarUrl;
-        final res = await http.put(uri,
-            body: json.encode(body),
-            headers: {'Content-Type': 'application/json'});
-        if (res.statusCode != 200) {
-          throw Exception('Failed to update profile: ${res.statusCode}');
-        }
-      }
+  static Future<void> updateUserProfile(
+    int userId,
+    String email,
+    String phone,
+    String location, {
+    String? name,
+    String? avatarUrl,
+  }) async {
+    final uri = Uri.parse('$baseUrl/users/$userId');
+    final body = <String, dynamic>{
+      'email': email,
+      'phone': phone,
+      'location': location,
+    };
+    if (name != null && name.isNotEmpty) body['name'] = name;
+    if (avatarUrl != null) body['avatar_url'] = avatarUrl;
+    print('Updating user profile with data: $body');
+    final res = await http.put(
+      uri,
+      body: json.encode(body),
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (res.statusCode != 200) {
+      throw Exception('Failed to update profile: ${res.statusCode}');
+    }
+  }
 
   // Auth
   static Future<Map<String, dynamic>?> login(String identifier, String password) async {
@@ -112,7 +123,7 @@ class ApiService {
     throw Exception(err['error'] ?? 'Signup failed');
   }
 
-  static Future<List<Venue>> getVenues({double? lat, double? lng}) async {
+  static Future<List<Venue>> getVenues({double? lat, double? lng}) async {print('Using API base URL: $baseUrl');
     String url = '$baseUrl/venues';
     if (lat != null && lng != null) {
       url += '?lat=$lat&lng=$lng&radius=10';

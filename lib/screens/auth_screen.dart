@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/bg_scaffold.dart';
 
 class AuthScreen extends StatefulWidget {
   final void Function(Map<String, dynamic> user)? onLogin;
@@ -15,20 +14,18 @@ class _AuthScreenState extends State<AuthScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // Sign in fields
   final _signInIdentifier = TextEditingController();
-  final _signInPassword = TextEditingController();
+  final _signInPassword   = TextEditingController();
   bool _signInObscure = true;
   bool _signInLoading = false;
 
-  // Sign up fields
-  final _signUpName = TextEditingController();
-  final _signUpEmail = TextEditingController();
+  final _signUpName     = TextEditingController();
+  final _signUpEmail    = TextEditingController();
   final _signUpPassword = TextEditingController();
-  final _signUpConfirm = TextEditingController();
-  bool _signUpObscure = true;
+  final _signUpConfirm  = TextEditingController();
+  bool _signUpObscure        = true;
   bool _signUpConfirmObscure = true;
-  bool _signUpLoading = false;
+  bool _signUpLoading        = false;
 
   final _signInFormKey = GlobalKey<FormState>();
   final _signUpFormKey = GlobalKey<FormState>();
@@ -88,69 +85,66 @@ class _AuthScreenState extends State<AuthScreen>
     }
   }
 
-  void _showSuccess(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  void _showSuccess(String msg) => ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
       content: Text(msg),
       backgroundColor: AppColors.success,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ));
-  }
+    ),
+  );
 
-  void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  void _showError(String msg) => ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
       content: Text(msg),
       backgroundColor: AppColors.error,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ));
-  }
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
-    return BgScaffold(
-      body: Stack(
-        children: [
-          // Background blobs
-          Positioned(
-            top: -80, right: -80,
-            child: Container(
-              width: 280, height: 280,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.gold.withOpacity(0.12),
-              ),
+    return Scaffold(
+      // This is the ONLY correct way — let Scaffold shrink body for keyboard
+      resizeToAvoidBottomInset: true,
+      body: Container(
+        // Background via decoration — no Stack, no StackFit conflicts
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: const AssetImage('assets/images/background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.white.withOpacity(0.55),
+              BlendMode.lighten,
             ),
           ),
-          Positioned(
-            bottom: -60, left: -60,
-            child: Container(
-              width: 200, height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.navy.withOpacity(0.06),
-              ),
-            ),
-          ),
-
-          SafeArea(
+        ),
+        child: GestureDetector(
+          //onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
             child: SingleChildScrollView(
+               keyboardDismissBehavior:
+                   ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 26),
 
-                  
+                  // ── App logo ──────────────────────────────────
                   Container(
-                    width: 52,
-                    height: 52,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
-                      color: AppColors.gold,
+                      color: const Color(0xFF354169),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Icon(Icons.location_city_rounded,
-                        color: AppColors.navy, size: 28),
+                    padding: const EdgeInsets.all(8),
+                    child: Image.asset(
+                      'assets/images/crew_logo_standalone.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                   const SizedBox(height: 18),
 
@@ -167,8 +161,7 @@ class _AuthScreenState extends State<AuthScreen>
                   Text(
                     'Find your crew. \nBook your game.',
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 108, 107, 107)
-                          .withOpacity(0.55),
+                      color: Colors.black.withOpacity(0.45),
                       fontSize: 16,
                       height: 1.4,
                     ),
@@ -176,104 +169,100 @@ class _AuthScreenState extends State<AuthScreen>
 
                   const SizedBox(height: 18),
 
-                  // Card with tabs
+                  // ── Auth card ─────────────────────────────────
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                            color: AppColors.navy.withOpacity(0.08),
-                            blurRadius: 20,
-                            offset: const Offset(0, 6)),
+                          color: AppColors.navy.withOpacity(0.08),
+                          blurRadius: 20,
+                          offset: const Offset(0, 6),
+                        ),
                       ],
                     ),
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Tab bar
                         
-
-                        // Tab content
                         SizedBox(
-                          height: 350,
+                          height: 360,
                           child: TabBarView(
                             controller: _tabController,
+                            physics: const NeverScrollableScrollPhysics(),
                             children: [
                               _SignInForm(
-                                formKey: _signInFormKey,
-                                identifier: _signInIdentifier,
-                                password: _signInPassword,
-                                obscure: _signInObscure,
+                                formKey:         _signInFormKey,
+                                identifier:      _signInIdentifier,
+                                password:        _signInPassword,
+                                obscure:         _signInObscure,
                                 onToggleObscure: () => setState(
                                     () => _signInObscure = !_signInObscure),
-                                loading: _signInLoading,
+                                loading:  _signInLoading,
                                 onSubmit: _handleSignIn,
                               ),
                               _SignUpForm(
-                                formKey: _signUpFormKey,
-                                name: _signUpName,
-                                email: _signUpEmail,
-                                password: _signUpPassword,
-                                confirm: _signUpConfirm,
-                                obscure: _signUpObscure,
-                                confirmObscure: _signUpConfirmObscure,
-                                onToggleObscure: () => setState(
+                                formKey:                _signUpFormKey,
+                                name:                   _signUpName,
+                                email:                  _signUpEmail,
+                                password:               _signUpPassword,
+                                confirm:                _signUpConfirm,
+                                obscure:                _signUpObscure,
+                                confirmObscure:         _signUpConfirmObscure,
+                                onToggleObscure:        () => setState(
                                     () => _signUpObscure = !_signUpObscure),
                                 onToggleConfirmObscure: () => setState(() =>
                                     _signUpConfirmObscure =
                                         !_signUpConfirmObscure),
-                                loading: _signUpLoading,
-                                onSubmit: _handleSignUp,
+                                loading:       _signUpLoading,
+                                onSubmit:      _handleSignUp,
                                 passwordValue: () => _signUpPassword.text,
                               ),
                             ],
                           ),
                         ),
+
+                        // Tab switcher
                         Container(
-  margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-  padding: const EdgeInsets.all(4),
-  decoration: BoxDecoration(
-    color: Colors.transparent,
-    borderRadius: BorderRadius.circular(30),
-    border: Border.all(
-      color: Colors.grey.shade200,
-      width: 1.5,
-    ),
-  ),
-  child: TabBar(
-    controller: _tabController,
-    indicator: BoxDecoration(
-      color: const Color.fromARGB(255, 222, 222, 222),
-      borderRadius: BorderRadius.circular(26),
-    ),
-    indicatorSize: TabBarIndicatorSize.tab,
-    dividerColor: Colors.transparent,
-    labelColor: Colors.white,
-    unselectedLabelColor: Colors.grey.shade500,
-    labelStyle: const TextStyle(
-      fontWeight: FontWeight.w600, 
-      fontSize: 14,
-    ),
-    unselectedLabelStyle: const TextStyle(
-      fontWeight: FontWeight.w500, 
-      fontSize: 14,
-    ),
-    tabs: const [
-      Tab(text: 'Sign In'),
-      Tab(text: 'Sign Up'),
-    ],
-  ),
-),
+                          margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                                color: Colors.grey.shade200, width: 1.5),
+                          ),
+                          child: TabBar(
+                            controller: _tabController,
+                            indicator: BoxDecoration(
+                              color:
+                                  const Color.fromARGB(255, 222, 222, 222),
+                              borderRadius: BorderRadius.circular(26),
+                            ),
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            dividerColor: Colors.transparent,
+                            labelColor: AppColors.navy,
+                            unselectedLabelColor: Colors.grey.shade500,
+                            labelStyle: const TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 14),
+                            unselectedLabelStyle: const TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 14),
+                            tabs: const [
+                              Tab(text: 'Sign In'),
+                              Tab(text: 'Sign Up'),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  //const SizedBox(height: 1),
                 ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -303,13 +292,12 @@ class _SignInForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
       child: Form(
         key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 80),
             const Text('Welcome back',
                 style: TextStyle(
                     fontSize: 20,
@@ -320,21 +308,20 @@ class _SignInForm extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 13, color: AppColors.textSecondary)),
             const SizedBox(height: 20),
-
             _AuthField(
               controller: identifier,
-              hint: 'Email or username',
-              icon: Icons.person_outline_rounded,
-              validator: (v) =>
+              hint:       'Email or username',
+              icon:       Icons.person_outline_rounded,
+              validator:  (v) =>
                   (v == null || v.trim().isEmpty) ? 'Required' : null,
             ),
             const SizedBox(height: 12),
             _AuthField(
-              controller: password,
-              hint: 'Password',
-              icon: Icons.lock_outline_rounded,
-              obscure: obscure,
-              suffixIcon: IconButton(
+              controller:  password,
+              hint:         'Password',
+              icon:         Icons.lock_outline_rounded,
+              obscure:      obscure,
+              suffixIcon:   IconButton(
                 icon: Icon(
                     obscure
                         ? Icons.visibility_off_outlined
@@ -343,12 +330,11 @@ class _SignInForm extends StatelessWidget {
                     color: AppColors.textMuted),
                 onPressed: onToggleObscure,
               ),
-              validator: (v) =>
+              validator:   (v) =>
                   (v == null || v.isEmpty) ? 'Required' : null,
               onSubmitted: (_) => onSubmit(),
             ),
             const SizedBox(height: 20),
-
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -362,8 +348,7 @@ class _SignInForm extends StatelessWidget {
                 ),
                 child: loading
                     ? const SizedBox(
-                        width: 20,
-                        height: 20,
+                        width: 20, height: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor:
@@ -414,7 +399,7 @@ class _SignUpForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
       child: Form(
         key: formKey,
         child: Column(
@@ -425,27 +410,22 @@ class _SignUpForm extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: Color.fromARGB(255, 37, 22, 149))),
-            // const SizedBox(height: 4),
-            // const Text('Join and start booking',
-                // style: TextStyle(
-                //     fontSize: 13, color: AppColors.textSecondary)),
-            const SizedBox(height: 8),
-
+            const SizedBox(height: 12),
             _AuthField(
-              controller: name,
-              hint: 'Full name',
-              icon: Icons.badge_outlined,
+              controller:        name,
+              hint:               'Full name',
+              icon:               Icons.badge_outlined,
               textCapitalization: TextCapitalization.words,
-              validator: (v) =>
+              validator:          (v) =>
                   (v == null || v.trim().isEmpty) ? 'Required' : null,
             ),
             const SizedBox(height: 10),
             _AuthField(
-              controller: email,
-              hint: 'Email address',
-              icon: Icons.mail_outline_rounded,
-              keyboardType: TextInputType.emailAddress,
-              validator: (v) {
+              controller:   email,
+              hint:          'Email address',
+              icon:          Icons.mail_outline_rounded,
+              keyboardType:  TextInputType.emailAddress,
+              validator:     (v) {
                 if (v == null || v.trim().isEmpty) return 'Required';
                 if (!v.contains('@')) return 'Enter a valid email';
                 return null;
@@ -454,10 +434,10 @@ class _SignUpForm extends StatelessWidget {
             const SizedBox(height: 10),
             _AuthField(
               controller: password,
-              hint: 'Password (min 6 chars)',
-              icon: Icons.lock_outline_rounded,
-              obscure: obscure,
-              suffixIcon: IconButton(
+              hint:        'Password (min 6 chars)',
+              icon:        Icons.lock_outline_rounded,
+              obscure:     obscure,
+              suffixIcon:  IconButton(
                 icon: Icon(
                     obscure
                         ? Icons.visibility_off_outlined
@@ -474,11 +454,11 @@ class _SignUpForm extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             _AuthField(
-              controller: confirm,
-              hint: 'Confirm password',
-              icon: Icons.lock_outline_rounded,
-              obscure: confirmObscure,
-              suffixIcon: IconButton(
+              controller:  confirm,
+              hint:         'Confirm password',
+              icon:         Icons.lock_outline_rounded,
+              obscure:      confirmObscure,
+              suffixIcon:   IconButton(
                 icon: Icon(
                     confirmObscure
                         ? Icons.visibility_off_outlined
@@ -487,13 +467,11 @@ class _SignUpForm extends StatelessWidget {
                     color: AppColors.textMuted),
                 onPressed: onToggleConfirmObscure,
               ),
-              validator: (v) => v != passwordValue()
-                  ? 'Passwords do not match'
-                  : null,
+              validator:   (v) =>
+                  v != passwordValue() ? 'Passwords do not match' : null,
               onSubmitted: (_) => onSubmit(),
             ),
             const SizedBox(height: 18),
-
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -508,12 +486,11 @@ class _SignUpForm extends StatelessWidget {
                 ),
                 child: loading
                     ? const SizedBox(
-                        width: 20,
-                        height: 20,
+                        width: 20, height: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(
-                                AppColors.navy)))
+                            valueColor:
+                                AlwaysStoppedAnimation(AppColors.navy)))
                     : const Text('Create Account',
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w800)),
@@ -554,36 +531,37 @@ class _AuthField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      keyboardType: keyboardType,
+      controller:         controller,
+      obscureText:        obscure,
+      keyboardType:       keyboardType,
       textCapitalization: textCapitalization,
-      autocorrect: false,
-      enableSuggestions: false,
-      validator: validator,
-      onFieldSubmitted: onSubmitted,
+      textInputAction:    TextInputAction.next,
+      autocorrect:        false,
+      enableSuggestions:  false,
+      validator:          validator,
+      onFieldSubmitted:   onSubmitted,
       style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary),
       decoration: InputDecoration(
-        hintText: hint,
-        hintStyle:
-            const TextStyle(fontSize: 13, color: AppColors.textMuted),
-        prefixIcon:
-            Icon(icon, size: 18, color: AppColors.textMuted),
+        hintText:   hint,
+        hintStyle:  const TextStyle(fontSize: 13, color: AppColors.textMuted),
+        prefixIcon: Icon(icon, size: 18, color: AppColors.textMuted),
         suffixIcon: suffixIcon,
-        filled: true,
-        fillColor: const Color.fromARGB(255, 231, 230, 230),
+        filled:     true,
+        fillColor:  const Color.fromARGB(255, 231, 230, 230),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.divider, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.divider, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.divider, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.divider, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
